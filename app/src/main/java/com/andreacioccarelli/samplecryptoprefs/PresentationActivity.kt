@@ -2,17 +2,18 @@ package com.andreacioccarelli.samplecryptoprefs
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.andreacioccarelli.cryptoprefs.CryptoPrefs
-
 import kotlinx.android.synthetic.main.activity_presentation.*
 import kotlinx.android.synthetic.main.content_presentation.*
-import android.content.Intent
-import android.net.Uri
+import org.json.JSONObject
 
 
 /**
@@ -22,6 +23,7 @@ class PresentationActivity : AppCompatActivity() {
 
     private lateinit var prefs: CryptoPrefs
     private val fileName = "Crypto"
+    private val key = "U29maWE="
     private val startCountKey = "start_count"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +31,7 @@ class PresentationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_presentation)
         setSupportActionBar(toolbar)
 
-        prefs = CryptoPrefs(applicationContext, fileName, "U29maWE=")
+        prefs = CryptoPrefs(applicationContext, fileName, key)
         prefs.put(startCountKey, prefs.getInt(startCountKey, 0) + 1)
 
         button.setOnClickListener {
@@ -44,10 +46,22 @@ class PresentationActivity : AppCompatActivity() {
 
         button2.setOnClickListener {
             // Standard reading operations
-            val x = "${prefs.getString("crypto_sample_string", "a")}\n" +
-                    "${prefs.getString("crypto_sample_int", 1)}\n" +
-                    prefs.getString("crypto_sample_boolean", true)
-            toast(x)
+            val jsonErrorLog = "{\n" +
+                    "    \"key\": \"Error\",\n" +
+                    "    \"details\": \"PizzaWithPineappleException\",\n" +
+                    "    \"mistakenIngredients\": {\n" +
+                    "        \"name\": \"Pineapple\",\n" +
+                    "        \"description\": \"Tropical fruit\"\n" +
+                    "    }\n" +
+                    "}"
+
+            val key = "json_response"
+            prefs.put(key, jsonErrorLog)
+            val jsonFromPrefs = JSONObject(prefs.getString(key, ""))
+
+            toast(jsonFromPrefs.getString("details"))
+
+            updateView()
         }
 
 
@@ -64,6 +78,13 @@ class PresentationActivity : AppCompatActivity() {
 
             // Calling apply() to commit changes
             prefs.apply()
+
+
+            for (pref in prefs.allPrefsMap) {
+                Log.d(this.javaClass.name, "${pref.key}: ${pref.value}")
+            }
+
+
             updateView()
         }
 
@@ -103,7 +124,7 @@ class PresentationActivity : AppCompatActivity() {
         content.text = "${content.text}\n\n\n"
     }
 
-    private fun toast(message: Any) {
+    private fun Context.toast(message: Any) {
         Toast.makeText(applicationContext, message.toString(), Toast.LENGTH_LONG).show()
     }
 

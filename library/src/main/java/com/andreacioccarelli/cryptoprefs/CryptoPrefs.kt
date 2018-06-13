@@ -5,12 +5,12 @@ import android.os.Bundle
 
 /**
  * Created by andrea on 2018/May.
- * Part of the package com.andreacioccarelli.cryptoprefs.preferences
+ * Part of the package com.andreacioccarelli.cryptoprefs
  */
 
-public class CryptoPrefs(context: Context, fileName: String, key: String) {
+public class CryptoPrefs(context: Context, fileName: String, key: String, shouldEncrypt: Boolean = true) {
 
-    private val preferences = CryptoWrapper(context, Pair(fileName, key))
+    private val preferences = CryptoWrapper(context, fileName to key, shouldEncrypt)
     
     public val allPrefsBundle: Bundle
         get() = preferences.getAllPreferencesBundle()
@@ -34,7 +34,6 @@ public class CryptoPrefs(context: Context, fileName: String, key: String) {
         preferences.put(key, value)
     }
 
-    
     /**
      * Returns the String found in pair with the matching key.
      * If no key is found in the file, the default value will 
@@ -107,6 +106,35 @@ public class CryptoPrefs(context: Context, fileName: String, key: String) {
      * */
     public fun getDouble(key: String, default: Any): Double {
         return preferences.get(key, default).toDouble()
+    }
+
+
+    /**
+     * Returns the Long found in pair with the matching key.
+     * If no key is found in the file, the default value will
+     * be returned and then, a field containing the key and the
+     * given default value will be created on the preferences.
+     *
+     * @param key the key of the item that will be searched
+     * @param default the default value, in case the key doesn't
+     *                exists in the file
+     * */
+    public fun getLong(key: String, default: Any): Long {
+        return preferences.get(key, default).toLong()
+    }
+
+    /**
+     * Returns the Short found in pair with the matching key.
+     * If no key is found in the file, the default value will
+     * be returned and then, a field containing the key and the
+     * given default value will be created on the preferences.
+     *
+     * @param key the key of the item that will be searched
+     * @param default the default value, in case the key doesn't
+     *                exists in the file
+     * */
+    public fun getShort(key: String, default: Any): Short {
+        return preferences.get(key, default).toShort()
     }
 
 
