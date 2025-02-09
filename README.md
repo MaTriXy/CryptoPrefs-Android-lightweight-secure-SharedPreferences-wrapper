@@ -1,187 +1,284 @@
-# CryptoPrefs
-[![Latest commit](https://jitpack.io/v/AndreaCioccarelli/CryptoPrefs.svg)](https://jitpack.io/#AndreaCioccarelli/CryptoPrefs)
-[![Codacy badge](https://api.codacy.com/project/badge/Grade/b294eaf4988842c090584b1315a5f348)](https://www.codacy.com/app/cioccarelliandrea01/CryptoPrefs)
-[![License](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/AndreaCioccarelli/CryptoPrefs/blob/master/LICENSE)
+<p align="center">
+  <a href="https://github.com/cioccarellia/ksprefs" target="_blank"><img width="100" src="https://raw.githubusercontent.com/cioccarellia/ksprefs/master/extras/ksprefs.png"></a>
+</p>
+<h1 align="center">KsPrefs</h1>
+<p align="center">Secure SharedPreferences</p>
+<p align="center">
+  <a href="https://search.maven.org/artifact/com.github.cioccarellia/ksprefs"><img src="https://img.shields.io/maven-central/v/com.github.cioccarellia/ksprefs.svg?label=Maven%20Central" alt="Download from MavenCentral"></a>
+  <a href="https://app.codacy.com/manual/cioccarellia/ksprefs/dashboard"><img src="https://api.codacy.com/project/badge/Grade/f10cdbdbe7b84d0ea7a03b755c104e03" alt="Codacy"></a>
+  <a href="https://kotlinlang.org/docs/releases.html"><img src="https://img.shields.io/badge/kotlin-1.9.22-orange.svg" alt="Kotlin"></a>
+  <a href="https://source.android.com/setup/start/build-numbers"><img src="https://img.shields.io/badge/min-19-00e676.svg" alt="Android Min Sdk"></a>
+  <a href="https://source.android.com/setup/start/build-numbers"><img src="https://img.shields.io/badge/compile-34-00e676.svg" alt="Android Compile Version"></a>
+  <a href="https://github.com/cioccarellia/ksprefs/blob/master/LICENSE.md"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+</p>
 
-CryptoPrefs is a kotlin powered cutting-edge Android library for storing encrypted preferences securely and protecting them from indiscrete user's eyes.
-All data you are going to store are encrypted using AES/CBC/PKCS5Padding algorithm and wrapped up using standard Base64 encoding.
-This library focuses on reliability, security, lightness and speed.
 
-## Repository
-CryptoPrefs uses jitpack as packages repository.
-To use it you need to add the repository to your project build.gradle file:
-```gradle
-allprojects {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-And the dependency to your module build.gradle file:
+<details open><summary>Gradle</summary>
+
 ```gradle
 dependencies {
-    implementation 'com.github.AndreaCioccarelli:CryptoPrefs:1.1.1'
+    implementation 'com.github.cioccarellia:ksprefs:2.4.1'
 }
 ```
+</details>
 
-## Usage
-```kotlin
-val prefs = CryptoPrefs(applicationContext, "CryptoFileName", "c29maWE=")
-```
-You need to pass 3 parameters in order to create an instance of the class CryptoPrefs:
-- The context of your Activity/Fragment
-- The file preferences name
-- Your secret key
-- Optionally, a boolean, if you wish to not encrypt the preferences (see [the dedicated paragraph](#plain))
+<details><summary>Kotlin DSL</summary>
 
-**Warning #1:** this library supports (indirectly) multi-files and multi-keys operations; However remember that saving all the preferences to one single file is much easier and has a better performance rate. View the [multi files and multi keys details](#multi)<br>
-**Warning #2:** if your project needs an even stronger security layer, consider placing the encryption key in the native libraries. (I personally like [chiper.so](https://github.com/MEiDIK/Cipher.so)).
-
-
-#### Set/Update values
-```kotlin
-prefs.put("crypto_age", 16)
-```
-This functions accepts 2 parameters, key and finalized, that are used to store the preference.
-If an item with the matching key is found, its finalized will be overwritten. Else, a preference is created.
-
-The `finalized` parameter is an `Any` type, it means that it can be everything; however when you get back the finalized you will have to choose to parse it to String, Boolean, Int, Float and Double.
-If you need to store another type of variable you can consider the idea of converting it to String before storing in the preferences.
-
-
-#### Read values
-```kotlin
-val name = prefs.getString("crypto_name", "Andrea")
-val age = prefs.getInt("crypto_age", 17)
-val pillsDouble = prefs.getDouble("crypto_pills", 2.5)
-val isMajor = prefs.getBoolean("crypto_is_major", false)
-val roomNumber = prefs.getFloat("crypto_room_number", 107.0F)
-val infinite = prefs.getLong("crypto_∞", 999999999999)
-```
-This functions accepts 2 parameters, key and default. 
-Key is used to search the preference into the file, and default is put in the matching key position and then returned if no item is matching with the given key.
-This means that if you need to use and create an item you can do it in just one line.
-```kotlin
-val startCounter = prefs.getInt("start_count", 0) // Creates the field start_count and set it at 0
-```
-
-#### Batch operations
-```kotlin
-for (i in 1..10000) {
-    prefs.queue("$i", (i*i).toFloat())
+```gradle
+dependencies {
+    implementation("com.github.cioccarellia:ksprefs:2.4.1")
 }
-prefs.apply()
 ```
-Sometimes SharedPreferences are used to store a huge number of items and in these cases I/O operations can be cpu intensive and slow down your app.
-Because of that, you can enqueue your modifications on the go just like normally using `put()`, but to actually apply them to the file you will have to call `apply()` once.
+</details>
 
-**Warning #1:** calling `put()` automatically applies all queued modifications.<br>
-**Warning #2:** `get` fetches the key on the file and not on the queue.
+<details><summary>Maven</summary>
 
+```xml
+<dependency>
+    <groupId>com.github.cioccarellia</groupId>
+    <artifactId>ksprefs</artifactId>
+    <version>2.4.1</version>
+    <type>pom</type>
+</dependency>
+```
+</details>
 
-#### All preferences lists
+- Powerful SharedPreferences wrapper & API.
+- Easy to pick up & use right away.
+- Tested and production-ready.
+- Fully customizable behaviour.
+- Built-in cryptography & decoding engines (PlainText, Base64, AES-CBC, AES-ECB, Android KeyStore + AES-GCM / RSA KeyPair).
+- Extensive type & enum support.
+
 ```kotlin
-val bundle: Bundle = prefs.allPrefsBundle
-val map: Map<String, String> = prefs.allPrefsMap
-val list: ArrayList<Pair<String, String>> = prefs.allPrefsList
+val prefs = KsPrefs(applicationContext)
+val count = prefs.pull<Int>("app_start_key")
 ```
-You can get all your SharedPreferences data and perform reading operations on them.
-The default type provided by the android API is a Map, but here you have a little bit more of choice.
 
+To _read_ from SharedPreferences, use `pull(key, fallback)`.<br>
+To _write_ to SharedPreferences, use `push(key, value)`.
 
-#### Remove
+## Introduction
+<img src="https://raw.githubusercontent.com/cioccarellia/ksprefs/master/extras/dark/png/scheme.png"><br><br>
+KsPrefs (<b>K</b>otlin <b>S</b>hared <b>Pref</b>erences) is a wrapper for the default Android SharedPreferences (_SP_ for short) implementation.<br>
+Its purposes are to bring security to preference storage through cryptography, to implement an elegant and practical SP API, and to do so with as little overhead as possible.<br>
+Ksprefs can be used as a replacement of direct _SP_ usage, which lacks both security and practicality, and which even Google is moving away from with [Jetpack DataStore](https://developer.android.com/topic/libraries/architecture/datastore).<br>
+On top of the _SP_ API, KsPrefs extends with numerous features and extra bits which come pre-packed with the library, and can be used to enhance the development experience and productivity.
+
+## Basics
+### Initialization
+
+You should create `KsPrefs` only once in your codebase. 
 ```kotlin
-prefs.remove("pizza_with_pineapple")
+val prefs = KsPrefs(applicationContext)
 ```
-You can remove at every time a finalized just selecting its key.
 
+It is recommended to keep it inside your `Application` class, so that it's reachable everywhere from your code.
 
-#### Erase
 ```kotlin
-prefs.erase()
-```
-This is simply a wrap of the `clear()` function of the android standard library
+class App : Application() {
 
+    companion object {
+        lateinit var appContext: Context
+        val prefs by lazy { KsPrefs(appContext) }
+    }
 
-## Smart cast
-A clean and fast approach is what this library aims to provide. I always found myself in java working with `String.valueOf()`, `Integer.parseInt()`, `Boolean.parseBoolean()` while reading SharedPreferences, 
-and then I decided I didn't want to see that happen again.
-Every argument you pass as finalized or default is an `Any` type, so it can be everything. CryptoPrefs will convert it back to string for the encryption 
-and eventually you will do the conversion from string to your target type.
-
-This is an example for a situation where you have a JSON response and you want to parse it later. You will find it also in the sample project.
-```json
-{
-    "key": "Error",
-    "details": "PizzaWithPineappleException",
-    "mistakenIngredient": {
-        "name": "Pineapple",
-        "description": "Tropical fruit"
+    override fun onCreate() {
+        super.onCreate()
+        appContext = this
     }
 }
 ```
 
+### Terminology
+
+| Term                   | Description                                                                                                                                            |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SP                     | Android Shared Preferences                                                                                                                             |
+| Entry                  | Key-Value pair stored by _SP_. Thus the basic data entity which can be pushed and pulled                                                               |
+| Persistent XML Storage | _SP_ XML file containing actual entries. Stored in the application [private storage](https://developer.android.com/training/data-storage/app-specific) |
+|                        |                                                                                                                                                        |
+|                        |                                                                                                                                                        |
+
+
+### Read <small>(Pull)</small>
+To retrieve saved values from _SP_ you use `pull()`.<br>
+Key uniquely identifies a record, fallback is the default value if none is found in _SP_.
+
 ```kotlin
-prefs.put("json_response", jsonErrorString)
-val jsonFromPrefs = JSONObject(prefs.getString("json_response", ""))
+val uname = prefs.pull(key = "username", fallback = nobody)
 ```
 
 
-## <a name="multi"></a> Multi-files and multi-keys
-I decided to not implement built in support for multiple files because it would have impacted on performances. 
-Instead, if you wish, you can have 2 instances and different filenames/keys for every file. Please keep in your mind that:
-- Saving a preference to one file won't make it available als on the other one
-- If you lose your key, your preferences won't be readable again
-- If you change your key for every file, opening the wrong file with a key will result in a bunch of unreadable stuff
+There are 4 different variants of `pull`. <!-- helo -->
 
-## <a name="plain"></a> Handling unencrypted files
-Even though this library is all about encryption, you still can operate with standard unencrypted preferences. Why?
-- For the purpose of testing, for example if in your app you need to debug SharedPreferences and you want to see the effective data
-- For providing compatibility with files that have been stored not just with this library 
+- `pull<T>(key, fallback<T>)`: Scans the preferences with the given key. If a record is found, the value is read from the persistent XML storage, deserialized as the requested type and returned. If the key isn't contained inside the storage, the fallback value is returned.
+- `pull<T>(key)`: No fallback value is supplied
+- `pull<T>(key, kclass<T>)`
+- `pull<T>(key, jclass<T>)`
 
-To do so, just initialize the preferences like this
+
+A function is defined *safe* when you supply the fallback (Android SharedPreferences defines it `default`) value, so that, for *any* given key, you always have a concrete in-memory value to return.<br>
+A function is *unsafe* because there is no guarantee it will return a concrete value, as it only relies on the supplied key to pull the value from the persistent XML storage<br>
+
+
+Even though the standard SharedPreferences API always forces you to provide a default (KsPrefs defines it `fallback`) value, KsPrefs allows you to leave that out, because supplying an actual instance of an object, in some contexts is verbose and redundant if you are know that the key is present inside the persistent storage, or if for some clever intuition you know that the key holds a value at some specific time.
+
 ```kotlin
-val prefs = CryptoPrefs(applicationContext, "CryptoFileName", "c29maWE=", false)
+val username = prefs.pull("username")
 ```
 
-**Warning:** Remember than encrypted files cannot be read without a key and that a plain text file read with a key will throw an exception with a clear message, use that just for debug purposes or if you know what you're doing
+*:pushpin: #1: Using an unsafe version of `pull()` isn't dangerous, as long as you are sure the target key holds a value.*<br>
+*:pushpin: #2: The 3 unsafe functions accept the type parameter as a kotlin class, as a java class or as a kotlin generic. For the latter, the bytecode of the function is inlined, in order for the generic type to be reified.*<br>
 
+### Write <small>(Push)</small>
+To save values to the preference storage you use `push()`<br>
+Push takes a key and a value, and stores them inside the preferences, according to the `commitStrategy`, `autoSavePoliciy`.
 
-
-## SharedPreferences plain XML vs CryptoPrefs encrypted XML
-```xml
-<map>
-  <boolean name="pro" finalized="true" />
-  <int name="user_coins" finalized="200" />
-</map>
-```
-```xml
-<map>
-  <string name="S2E3QmlYamlGL0JHLy9jWHZudUFmdz09">YXlSSWIyc2E2bm9iSTJLMGZSekVlQT09</string>
-  <string name="cFY4TnJWRnNWVUR4QWZZVEhKMlhvdz09">MHdEcC9Zb002cjJpVGxZMVRrNmVGdz09</string>
-</map>
+```kotlin
+prefs.push("username", viewModel.username)
 ```
 
-## Sample project
-If you wish a full and detailed proof of concept you can look at the :app module of this repository, you will find an android sample about this library and it's functions
 
-## Concept
-Android default SharedPreferences APIs allows you to dynamically store some configuration data on your application internal storage. 
-With the time android had become more popular and so many apps were developed. The result is that secure informations, critical/sensitive 
-data and billing informations are stored there [without even a basic protection](https://medium.com/@andreacioccarelli/android-sharedpreferences-data-weakness-66a44f070e76).
-This library aims to terminate easy application
 
-## License
+### Configuration
+KsPrefs is configurable at initialization time with specific parameters.<br>
+Each parameters has a default value which will be used unless you specify otherwise.<br>
+Each parameter changes the internal behaviour and the algorithms used, so it is vital to choose the appropriate settings.<br>
+
+```kotlin
+val prefs = KsPrefs(applicationContext) {
+    // Configuration Parameters Lambda
+    encryptionType = PlainText()
+    autoSave = AutoSavePolicy.MANUAL
+    commitStrategy = CommitStrategy.COMMIT
+}
 ```
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+| Field          | Type           | Description                                                                                                                       | Default Value            |
+|----------------|----------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| encryptionType | EncryptionType | Encryption technique used to encrypt and decrypt data                                                                             | PlainText()              |
+| commitStrategy | CommitStrategy | Strategy to use at the moment of writing preferences entries to the persistent XML storage                                        | CommitStrategy.APPLY     |
+| autoSave       | AutoSavePolicy | Whether after a `push()` operation changes are saved to the persistent XML storage; saving strategy depending on `commitStrategy` | AutoSavePolicy.AUTOMATIC |
+| mode           | Int            | SharedPreferences access mode                                                                                                     | Context.MODE_PRIVATE     |
+| charset        | Charset        | Charset used for string-to-byte and byte-to-string conversions                                                                    | Charsets.UTF_8           |
+| keyRegex       | Regex?         | Regular Expression which, if non null, every key must match.                                                                      | null                     |
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+
+
+### Saving, Auto Save Policies & Commit Strategies
+A pending transaction is a change which is registered in-memory, but not yet on the XML preference file.
+Android SharedPreferences works that way; indeed, you can stack up pending transactions, but at some point you have to _actually_ save them.
+If the app were to shut down unexpectedly, those changes would be lost.<br>
+To commit any pending transaction to the persistent XML storage, in ksprefs you use `save()`. 
+This matches `commit()` and `apply()` SharedPreferences behaviour you may be accustomed to.<br>
+
+#### Auto Save Policy
+By default, `autoSave` is set to `AutoSavePolicy.AUTOMATIC`, and therefore changes are automatically synchronized with the underlying XML file, because after each `push()` call, a `save()` follows, in order to automatically commit and save the preference. Therefore, no pending transaction is kept.
+
+However, if `autoSave` is turned off (using `AutoSavePolicy.MANUAL`), `push()` will save the change in-memory, but is not going to write it to the XML preferences file until `save()` is invoked. This way it's going to create a pending transaction which will be kept in-memory until a `save()` operation happens.
+
+Here is a table representing when values are saved to the storage, depending on the policy in use.
+
+| `AutoSavePolicy`                  | AUTO               | MANUAL             |
+|-----------------------------------|--------------------|--------------------|
+| push()                            | :white_check_mark: | :x:                |
+| queue()                           | :x:                | :x:                |
+| save()                            | :white_check_mark: | :white_check_mark: |
+| SharedPreferences.Editor.commit() | :white_check_mark: | :white_check_mark: |
+| SharedPreferences.Editor.apply()  | :white_check_mark: | :white_check_mark: |
+
+*:pushpin: `AutoSavePolicy` chooses when to write changes to the persistent XML storage and when to keep them in memory.*<br>
+
+#### Commit Strategy
+The best (and default) practise while dealing with SharedPreferences is to use `APPLY`. It is asynchronous and fast. `COMMIT` is also available, though it should not be used unless you have a valid reason to, given its synchronous and strict nature, as well as `NONE`, for no-op (Does not save anything, used internally for `queue()`).<br>
+`save()` and `push()` always refer to the commit strategy to decide how to save their updates to the persistent XML preference storage.
+
+Here is a table representing various features of different commit strategies. Check out the official documentation [here](https://developer.android.com/reference/android/content/SharedPreferences.Editor.html) and see [this](https://stackoverflow.com/questions/5960678/whats-the-difference-between-commit-and-apply-in-sharedpreferences) post for more intel.
+
+| `CommitStrategy` | APPLY              | COMMIT             | NONE                |
+|------------------|--------------------|--------------------|---------------------|
+| in-memory        | :white_check_mark: | :white_check_mark: | :white_check_mark:  |
+| XML              | :white_check_mark: | :white_check_mark: | :x:                 |
+| async            | :white_check_mark: | :x:                | :heavy_minus_sign:	 |
+| atomic           | :white_check_mark: | :white_check_mark: | :heavy_minus_sign:	 |
+| error report     | :x:                | :white_check_mark: | :heavy_minus_sign:	 |
+
+*:pushpin: The `CommitStrategy` involves how to write changes to the persistent XML storage.*<br>
+
+### Queuing
+To enqueue values to be written into the preference storage you use `queue()`. It follows `push()`'s syntax.<br>
+While `push`, by default, _pushes_ the update immediately on the XML persistent storage (By default, changeable with `AutoSave`), `queue()` saves the update in-memory without writing it out to the storage.<br>
+Not writing the changes to the file makes enqueuing a valid choice for both batch computing or resource-expensive and long-running operations.<br>
+- `queue()` takes a key and a value, and saves the changes in-memory.<br>
+- `queue()` does not actually send updates to the storage. You can do so by calling `save()` (Or by using `push()` subsequently).
+<br><br>
+
+This segment touches a broader concept, which is storing scope.
+There are two storing scopes for SharedPreferences:
+- in-memory (key-value pairs are kept in memory). This is fast to read to/write from, but does not persist application restarts.
+- XML (key-value pairs are kept on a file). Writing to a file is mildly expensive but it allows preferences to survive across application restarts.<br>
+Here is a table explaining how different methods inside KsPrefs touch and go through those storing scopes.
+
+| `StoringScope` | in-memory          | XML                             |
+|----------------|--------------------|---------------------------------|
+| push(k, v)     | :white_check_mark: | :white_check_mark: (By default) |
+| queue(k, v)    | :white_check_mark: | :x:                             |
+| save()         | :white_check_mark: | :white_check_mark:              |
+
+*:pushpin: The `StoringScope` determines at which level changes are propagated.*<br>
+
+In the following snippet (Given that `autoSavePolicy` is set to `AUTOMATIC`), `n` in-memory and `x` XML write operations are performed. This, given  `f(n)` and `f(x)` for how long those operations will take, takes `n×f(n) + m×f(x)`. Given that, if using `push()`, `m=n`, then it resolves to `n×(f(n) + f(x))`
+
+```kotlin
+for ((index, pic) in picsArray.toList().withIndex()) {
+    // Long-running computation
+    prefs.push("pic-$index", pic.url)
+}
 ```
+
+Even though this isn't a significant speedup for small data sizes, as n (and m) grow the computation takes longer; since enqueuing values sets `m=1`, thus, `f(n) < f(x)`. The time/op chart follows a much more gentle curve: `n×f(n) + f(x)`.
+This improvements drastically optimizes performances for a large amount of operations.
+
+```kotlin
+for ((index, pic) in picsArray.toList().withIndex()) {
+    // Long-running computation
+    prefs.queue("pic-$index", pic.url)
+}
+
+// One save operation
+prefs.save()
+```
+
+Please note, that if you set `autoSavePolicy` to `MANUAL`, `push()` will only change the in-memory values, and you will need to save them manually anyways.
+
+## API
+KsPrefs provides some customizable data structures, to abstract preference reads/writes to function calls.
+
+### Preferences Center
+A `PrefsCenter` is to be though as a task-specific abstractor. It is used to enclose and contain all the SP-specific operations, such as providing a key, doing some value specific post-read/pre-write operation, providing the fallback value or the explicit return type, handling logic / conditions and interacting with other app components.
+
+```kotlin
+object StartCounterPrefCenter : PrefsCenter(App.prefs) {
+    private const val counterKey = "start_counter"
+    
+    fun increment() = prefs.push(counterKey,  read() + 1)
+    fun read() = prefs.pull(counterKey, 0)
+}
+```
+
+### Dynamic Delegates
+It is really useful and fun to have dynamic properties whose value is a direct representation of what the underlying XML preferences file contains.
+
+```kotlin
+val accentColor by prefs.dynamic("accent_color", "#2106F3")
+```
+
+When you set a value for this property, it is also updated on the XML preference file, as it is a dynamic reference to the preference.
+
+## Encryption
+KsPrefs provides with different levels of encryption. From no encryption at all (`EncryptionType.PlainText` and `EncryptionType.Base64`), to standard [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) with key size among 128, 192 & 256-bit and ECB/CBC modes (base64-wrapped ciphertext), to [Android's own keystore system](https://developer.android.com/training/articles/keystore) (though the ksprefs implementation isn't nearly as fast as the AES-backed one).</br>
+It is recommended to store the AES key into a native library shipped with your application, which makes reverse engineering your code harder.
+
+## Sample App
+<img src="https://raw.githubusercontent.com/cioccarellia/ksprefs/master/art/demo-app.png">
